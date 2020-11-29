@@ -1,0 +1,161 @@
+<!DOCTYPE html> 
+<html lang="en"> 
+<head> 
+  <meta charset="utf-8"> 
+  <meta name="viewport" 
+        content="width=device-width, 
+                 initial-scale=1, 
+                 shrink-to-fit=no"> 
+  
+  <link rel="stylesheet" href="styles/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&display=swap" rel="stylesheet">
+
+  <link rel="icon" href="pics\leagueoflegends_94793.ico">
+
+  <title>
+    League Of Legends Heroes   
+  </title> 
+  
+  <link rel="stylesheet"
+        href= 
+"https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"> 
+  
+  <link rel="stylesheet" 
+        href= 
+"https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.css"> 
+</head> 
+<body class='bodyClass'> 
+  <div class="container">
+    <div class='div-center'>
+      <img class='img-cust-align' src="pics\omega_squad_teemo_dock_icon_by_outlawninja_d8nx33a-fullview.png">
+    </div> 
+    <h1 class="text text-center mt-2 cool-font">
+      League Of Legend Heroes
+    </h1> 
+    <div class="text grey-color text-center mb-2">
+      List with all of the LoL Heroes
+    </div> 
+  </div>
+
+  <div class="container mt-5">
+    <div class="row mt-4 mb-4 btn-group-justified">
+        <div class="col btn-group mb-2">
+             <button id="all-button" href="#" type="button" class="btn btn-dark" onclick='hideRowById("all", "all-button")'>ALL</button>
+        </div>
+        <div class="col btn-group mb-2">
+             <button id="ass-button" href="#" type="button" class="btn btn-dark "  onclick='hideRowById("Assassin", "ass-button")'>ASSASSINS</button>
+        </div>
+        <div class="col btn-group mb-2">
+            <button id="fight-button" href="#"  type="button" class="btn btn-dark" onclick='hideRowById("Fighter", "fight-button")'>FIGHTERS</button>
+        </div>
+        <div class="col btn-group mb-2"> 
+            <button id="mage-button" href="#"  type="button" class="btn btn-dark" onclick='hideRowById("Mage", "mage-button")'>MAGES</button>
+        </div> 
+        <div class="col btn-group mb-2">
+            <button  id="mark-button" href="#" type="button" class="btn btn-dark" onclick='hideRowById("Marksman", "mark-button")'>MARKSMAN</button>
+        </div>
+        <div class="col btn-group mb-2">
+            <button  id="supp-button" href="#" type="button" class="btn btn-dark" onclick='hideRowById("Support", "supp-button")'>SUPPORTS</button>
+        </div>
+        <div class="col btn-group mb-2">
+            <button  id="tank-button" href="#" type="button" class="btn btn-dark" onclick='hideRowById("Tank", "tank-button")'>TANKS</button>
+        </div> 
+        <div class="col btn-group mb-2">
+            <button id="view-button"  href="#" type="button" class="btn btn-primary" onclick='changeView()'>Gallery view</button>
+        </div>   
+    </div>
+  </div>
+
+  <div class="container" id='champsList'>
+    <table class="table">
+      <tbody id='tableBody'>
+      </tbody> 
+     </table>
+  </div>
+  <div class="container" id='galeryContainer'>
+      <div class="row justify-content-around" id='galeryView'>
+      </div>
+  </div>
+  <div id="left"></div>
+  <div id="right"></div>
+  
+  <script src= 
+"https://code.jquery.com/jquery-3.5.1.min.js"> 
+  </script> 
+
+  <script src= 
+"https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"> 
+  </script> 
+  
+  <script src= 
+"https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.js"> 
+  </script> 
+
+  <script type="text/javascript"> 
+    $(document).ready(function () { 
+      $.ajax({//
+                method: "GET",
+                url: "http://ddragon.leagueoflegends.com/cdn/10.24.1/data/en_US/champion.json",
+                dataType: "json"
+            }).done(function(mydata){
+                $.each(mydata.data, (i, item ) =>{
+                    $('#tableBody').append('<tr class="height-ajust" id="' + item.id + '"><td> <div class="text bold div-center" style="width:140px">' + item.name + '</div> <div class="div-center"> <img src="http://ddragon.leagueoflegends.com/cdn/10.24.1/img/champion/' +
+                         item.id + '.png" class="img-fluid" alt="Responsive image"> </div></td><td class="align-middle"><div class="bold">'+ item.title + '</div><div>' + item.blurb + '</div></td></tr>')
+
+                    $('#galeryView').append('<div class="col-4 mb-5 galery-item" id="' + item.id + '_gv' +  '"><div> <div class="text bold div-center">' + item.name + ' - ' + item.title + '</div> <div class="div-center"> <img src='+
+                        '"http://ddragon.leagueoflegends.com/cdn/img/champion/loading/' + item.id + '_0.jpg" '+
+                        ' class="img-fluid" alt="Responsive image"> </div></div><td class="align-middle"></div></div>')
+                    $.each(item.tags, (j, tag) =>{
+                         document.getElementById(item.id).classList.add(tag);
+                         document.getElementById(item.id + '_gv').classList.add(tag);
+                         
+                    })                                                             
+                })
+            });
+            document.getElementById('galeryContainer').classList.add('hideme');          
+    });
+
+    function hideRowById(id, buttonId) {
+        $('.selected').removeClass('selected');
+        document.getElementById(buttonId).classList.add('selected');
+        const tableElements = document.getElementsByTagName('tr');
+        $.each(tableElements, (i, item ) =>{
+            console.log("Check :" + item + id)
+            if(item.classList.contains(id) || id == "all"){
+                item.style.display = null;
+            } else {
+                item.style.display = "none";
+            }
+        });
+        const galeryElements = document.getElementsByClassName('galery-item');
+        $.each(galeryElements, (i, item ) =>{
+            console.log("Check :" + item + id)
+            if(item.classList.contains(id) || id == "all"){
+                item.style.display = null;
+            } else {
+                item.style.display = "none";
+            }
+        });
+    };
+
+    function changeView(){
+        if (document.getElementById('galeryContainer').classList.contains("hideme")){
+            document.getElementById('champsList').classList.remove('showme');
+            document.getElementById('champsList').classList.add('hideme');
+            document.getElementById('galeryContainer').classList.remove('hideme');
+            document.getElementById('galeryContainer').classList.add('showme');
+            document.getElementById("view-button").innerHTML = "Table view";
+        }else{
+            document.getElementById('galeryContainer').classList.remove('showme');
+            document.getElementById('galeryContainer').classList.add('hideme');
+            document.getElementById('champsList').classList.remove('hideme');
+            document.getElementById('champsList').classList.add('showme');
+            document.getElementById("view-button").innerHTML = "Gallery view";
+        }
+   
+    };
+
+  </script> 
+</body> 
+</html>
