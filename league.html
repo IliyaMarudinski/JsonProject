@@ -41,25 +41,25 @@
   <div class="container mt-5">
     <div class="row mt-4 mb-4 btn-group-justified">
         <div class="col btn-group mb-2">
-             <button id="all-button" href="#" type="button" class="btn btn-dark" onclick='hideRowById("all", "all-button")'>ALL</button>
+             <button id="all" href="#" type="button" class="btn btn-dark selected" onclick='sortById("all")'>ALL</button>
         </div>
         <div class="col btn-group mb-2">
-             <button id="ass-button" href="#" type="button" class="btn btn-dark "  onclick='hideRowById("Assassin", "ass-button")'>ASSASSINS</button>
+             <button id="Assassin" href="#" type="button" class="btn btn-dark "  onclick='sortById("Assassin")'>ASSASSINS</button>
         </div>
         <div class="col btn-group mb-2">
-            <button id="fight-button" href="#"  type="button" class="btn btn-dark" onclick='hideRowById("Fighter", "fight-button")'>FIGHTERS</button>
+            <button id="Fighter" href="#"  type="button" class="btn btn-dark" onclick='sortById("Fighter")'>FIGHTERS</button>
         </div>
         <div class="col btn-group mb-2"> 
-            <button id="mage-button" href="#"  type="button" class="btn btn-dark" onclick='hideRowById("Mage", "mage-button")'>MAGES</button>
+            <button id="Mage" href="#"  type="button" class="btn btn-dark" onclick='sortById("Mage")'>MAGES</button>
         </div> 
         <div class="col btn-group mb-2">
-            <button  id="mark-button" href="#" type="button" class="btn btn-dark" onclick='hideRowById("Marksman", "mark-button")'>MARKSMAN</button>
+            <button  id="Marksman" href="#" type="button" class="btn btn-dark" onclick='sortById("Marksman")'>MARKSMAN</button>
         </div>
         <div class="col btn-group mb-2">
-            <button  id="supp-button" href="#" type="button" class="btn btn-dark" onclick='hideRowById("Support", "supp-button")'>SUPPORTS</button>
+            <button  id="Support" href="#" type="button" class="btn btn-dark" onclick='sortById("Support")'>SUPPORTS</button>
         </div>
         <div class="col btn-group mb-2">
-            <button  id="tank-button" href="#" type="button" class="btn btn-dark" onclick='hideRowById("Tank", "tank-button")'>TANKS</button>
+            <button  id="Tank" href="#" type="button" class="btn btn-dark" onclick='sortById("Tank")'>TANKS</button>
         </div> 
         <div class="col btn-group mb-2">
             <button id="view-button"  href="#" type="button" class="btn btn-primary" onclick='changeView()'>Gallery view</button>
@@ -94,49 +94,71 @@
 
   <script type="text/javascript"> 
     $(document).ready(function () { 
+            document.getElementById('galeryContainer').classList.add('hideme');          
+            load_json("all");
+    });
+
+    function load_json(id){
+      var isTableVIew = false;
+      document.getElementById('tableBody').innerHTML = '';
+      document.getElementById('galeryView').innerHTML = '';
+      if (document.getElementById('galeryContainer').classList.contains("hideme")) isTableVIew = true;
       $.ajax({//
                 method: "GET",
                 url: "http://ddragon.leagueoflegends.com/cdn/10.24.1/data/en_US/champion.json",
                 dataType: "json"
             }).done(function(mydata){
                 $.each(mydata.data, (i, item ) =>{
-                    $('#tableBody').append('<tr class="height-ajust" id="' + item.id + '"><td> <div class="text bold div-center" style="width:140px">' + item.name + '</div> <div class="div-center"> <img src="http://ddragon.leagueoflegends.com/cdn/10.24.1/img/champion/' +
-                         item.id + '.png" class="img-fluid" alt="Responsive image"> </div></td><td class="align-middle"><div class="bold">'+ item.title + '</div><div>' + item.blurb + '</div></td></tr>')
+                    if(contains(item.tags, id) || id == "all"){
+                        if(isTableVIew){
+                          $('#tableBody').append('<tr class="height-ajust" id="' + item.id + '"><td> <div class="text bold div-center" style="width:140px">' + item.name + '</div> <div class="div-center"> <img src="http://ddragon.leagueoflegends.com/cdn/10.24.1/img/champion/' +
+                              item.id + '.png" class="img-fluid" alt="Responsive image"> </div></td><td class="align-middle"><div class="bold">'+ item.title + '</div><div>' + item.blurb + '</div></td></tr>')
+                        } else {
+                          $('#galeryView').append('<div class="col-4 mb-5 galery-item" id="' + item.id  +  '"><div> <div class="text bold div-center">' + item.name + ' - ' + item.title + '</div> <div class="div-center"> <img src='+
+                              '"http://ddragon.leagueoflegends.com/cdn/img/champion/loading/' + item.id + '_0.jpg" '+
+                              ' class="img-fluid" alt="Responsive image"> </div></div><td class="align-middle"></div></div>')
+                        }
+                        $.each(item.tags, (j, tag) =>{
+                          document.getElementById(item.id).classList.add(tag);
+                        })
+                    }
+                })                                                             
+            })
+    };
 
-                    $('#galeryView').append('<div class="col-4 mb-5 galery-item" id="' + item.id + '_gv' +  '"><div> <div class="text bold div-center">' + item.name + ' - ' + item.title + '</div> <div class="div-center"> <img src='+
-                        '"http://ddragon.leagueoflegends.com/cdn/img/champion/loading/' + item.id + '_0.jpg" '+
-                        ' class="img-fluid" alt="Responsive image"> </div></div><td class="align-middle"></div></div>')
-                    $.each(item.tags, (j, tag) =>{
-                         document.getElementById(item.id).classList.add(tag);
-                         document.getElementById(item.id + '_gv').classList.add(tag);
-                         
-                    })                                                             
-                })
-            });
-            document.getElementById('galeryContainer').classList.add('hideme');          
-    });
+    function contains(a, obj) {
+      var i = a.length;
+       while (i--) {
+        console.log(a[i], obj);
+         if (a[i] === obj) {
+             return true;
+         }
+      }
+      return false;
+    }
 
-    function hideRowById(id, buttonId) {
+    function sortById(id) {
         $('.selected').removeClass('selected');
-        document.getElementById(buttonId).classList.add('selected');
-        const tableElements = document.getElementsByTagName('tr');
-        $.each(tableElements, (i, item ) =>{
-            console.log("Check :" + item + id)
-            if(item.classList.contains(id) || id == "all"){
-                item.style.display = null;
-            } else {
-                item.style.display = "none";
-            }
-        });
-        const galeryElements = document.getElementsByClassName('galery-item');
-        $.each(galeryElements, (i, item ) =>{
-            console.log("Check :" + item + id)
-            if(item.classList.contains(id) || id == "all"){
-                item.style.display = null;
-            } else {
-                item.style.display = "none";
-            }
-        });
+        document.getElementById(id).classList.add('selected');
+        // const tableElements = document.getElementsByTagName('tr');
+        // $.each(tableElements, (i, item ) =>{
+        //     console.log("Check :" + item + id)
+        //     if(item.classList.contains(id) || id == "all"){
+        //         item.style.display = null;
+        //     } else {
+        //         item.style.display = "none";
+        //     }
+        // });
+        // const galeryElements = document.getElementsByClassName('galery-item');
+        // $.each(galeryElements, (i, item ) =>{
+        //     console.log("Check :" + item + id)
+        //     if(item.classList.contains(id) || id == "all"){
+        //         item.style.display = null;
+        //     } else {
+        //         item.style.display = "none";
+        //     }
+        // });
+        load_json(id);
     };
 
     function changeView(){
@@ -153,7 +175,9 @@
             document.getElementById('champsList').classList.add('showme');
             document.getElementById("view-button").innerHTML = "Gallery view";
         }
-   
+        var selButton = document.getElementsByClassName('selected')[0].id;
+        console.log('!!!!!!!!!!!!!!!!' + selButton);
+        load_json(selButton);
     };
 
   </script> 
